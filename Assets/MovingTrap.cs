@@ -8,11 +8,15 @@ public class MovingTrap : MonoBehaviour
     [SerializeField] private int nextPosition;
     [SerializeField] private float trapSpeed;
     [SerializeField] private float rotationMultiplier;
+    [SerializeField] private int chanceToSpawn;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (Random.Range(1, 100) > chanceToSpawn)
+        {
+            Destroy(transform.parent.gameObject);
+        }
     }
 
     // Update is called once per frame
