@@ -38,6 +38,13 @@ public class Player : MonoBehaviour
     public float doubleJumpForceMultiplier;
     public float speedForRoll;
 
+    [Header("Knockback Info")]
+    [SerializeField] private Vector2 knockbackDirection;
+    [SerializeField] private float knockbackPower;
+
+    private bool canBeKnocked = true;
+    private bool isKnocked;
+
     [Header("SlideInfo")]
     public float slideSpeedMultiplier;
     private bool isSliding;
@@ -109,6 +116,7 @@ public class Player : MonoBehaviour
         anim.SetBool("canClimbLedge", canClimbLedge);
         anim.SetBool("canDoubleJump", canDoubleJump);
         anim.SetBool("canRoll", canRoll);
+        anim.SetBool("isKnocked", isKnocked);
         anim.SetFloat("runningSpeed", rb.velocity.x * animationSpeedMultiplier);
 
         if (rb.velocity.y < speedForRoll)
@@ -117,13 +125,38 @@ public class Player : MonoBehaviour
         }
     }
 
+    // This is called automatically by the Animation Event system when the rolling animation is finished.
     private void rollAnimationFinished()
     {
         canRoll = false;
     }
 
+    // This is called automatically by the Animation Event system when the knockback animation is finished.
+    private void knockbackAnimationFinished()
+    {
+        isKnocked = false;
+        canBeKnocked = true;
+        canRun = true;
+    }
+
+    public void knockback()
+    {
+        if (canBeKnocked)
+        {
+            isKnocked = true;
+        }
+    }
+
     private void checkForRun()
     {
+        // This makes sure that we can only be knocked back once, until the animation is completed.
+        if (isKnocked && canBeKnocked)
+        {
+            canBeKnocked = false;
+            canRun = false;
+            rb.velocity = knockbackDirection * knockbackPower;
+        }
+
         if (canRun)
         {
             // If player has collided with a wall, reset the speed.

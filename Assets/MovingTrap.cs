@@ -10,13 +10,20 @@ public class MovingTrap : MonoBehaviour
     [SerializeField] private float rotationMultiplier;
     [SerializeField] private int chanceToSpawn;
 
+    private Player player;
+
     // Start is called before the first frame update
     void Start()
     {
+        // A random roll to decide whether to keep the Trap or destroy it.
         if (Random.Range(1, 100) > chanceToSpawn)
         {
+            // Since this script is attached to a child element, make sure to destroy the player to remove the object.
             Destroy(transform.parent.gameObject);
         }
+
+        // Get reference to the Player script.
+        player = GameObject.Find("Player").GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -52,7 +59,7 @@ public class MovingTrap : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            Debug.Log("Moving damage");
+            player.knockback();
         }
     }
 }
